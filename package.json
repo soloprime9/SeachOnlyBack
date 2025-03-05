@@ -12,6 +12,8 @@
     "archiver": "^7.0.1",
     "axios": "^1.8.1",
     "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "duckduckgo-images-api": "^1.0.5",
     "express": "^4.21.2"
   },
   "description": ""
