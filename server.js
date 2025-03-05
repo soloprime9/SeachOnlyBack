@@ -1,18 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios'); 
-const duckduckgo = require('duckduckgo-images-api'); 
-
+const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Enable CORS
 app.use(cors({
   origin: 'https://search-beta-six.vercel.app'
 }));
 
-// Search route
 app.get('/search', async (req, res) => {
   const query = req.query.q;
 
@@ -21,26 +17,22 @@ app.get('/search', async (req, res) => {
   }
 
   try {
-    const results = await duckduckgo.image_search({
-      query: query,
-      moderate: true,  
-      iterations: 1     
-    });
+    const response = await axios.get(`https://api.duckduckgo.com/?q=${query}&format=json&no_html=1&skip_disambig=1&safe=moderate`);
+    const results = response.data.RelatedTopics;
 
-    // Adapt results to match the desired output format
-    const formattedResults = results.results.map(result => ({
-      title: result.title,
-      url: result.image, 
-      snippet: result.snippet  
+    const requestList = results.map(result => ({
+      title: result.FirstURL,
+      url: result.FirstURL,
+      snippet: result.Text
     }));
-    res.json(formattedResults);
+
+    res.json(requestList);
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error(error);
     res.status(500).json({ error: 'Failed to fetch data from DuckDuckGo' });
   }
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
